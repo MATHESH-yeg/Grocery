@@ -147,15 +147,7 @@ const CartPage = () => {
             </button>
           </div>
 
-          {/* Trust Badges */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 className="font-semibold text-gray-800 mb-4 text-sm">We Accept</h3>
-            <div className="flex gap-3 opacity-70 grayscale hover:grayscale-0 transition-all duration-300">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6" />
-            </div>
-          </div>
+
         </div>
       </div>
     </div>

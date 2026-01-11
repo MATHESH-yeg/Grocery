@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { QRCodeCanvas } from 'qrcode.react';
 
 const CheckoutPage = () => {
   const { items, subtotal, clearLocal } = useCart();
@@ -64,74 +65,24 @@ const CheckoutPage = () => {
 
     setLoading(true);
     try {
-      // 1. Create Order
-      const orderUrl = '/api/payment/create-order';
-      const { data: order } = await axios.post(
-        orderUrl,
-        { amount: Math.round(total * 100) },
+      // Direct Order Creation for Manual Payment
+      const res = await axios.post(
+        '/api/orders',
+        {
+          address,
+          paymentStatus: 'paid', // Assuming user pays before clicking
+          paymentReference: 'UPI_MANUAL',
+          deliveryInstructions: note,
+        },
         { headers: { 'x-auth-token': token } }
       );
 
-      // 2. Initialize Razorpay
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_RqZdzEVBQPglcI',
-        amount: order.amount,
-        currency: order.currency,
-        name: 'Fresh Farm Store',
-        description: 'Farm Produce Order Payment',
-        order_id: order.id,
-        handler: async function (response) {
-          try {
-            // 3. Verify Payment
-            const verifyUrl = '/api/payment/verify';
-            await axios.post(
-              verifyUrl,
-              {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              },
-              { headers: { 'x-auth-token': token } }
-            );
-
-            // 4. Place Order in Backend
-            const res = await axios.post(
-              '/api/orders',
-              {
-                address,
-                paymentStatus: 'paid',
-                paymentReference: response.razorpay_payment_id,
-                deliveryInstructions: note,
-              },
-              { headers: { 'x-auth-token': token } }
-            );
-
-            clearLocal();
-            navigate(`/orders/confirmation?id=${res.data._id}`, { replace: true });
-          } catch (err) {
-            console.error(err);
-            alert('Payment verification failed. Please contact support.');
-          }
-        },
-        prefill: {
-          name: `${form.firstName} ${form.lastName}`,
-          email: form.email,
-          contact: form.phone,
-        },
-        theme: {
-          color: '#7c3aed', // Violet-600
-        },
-      };
-
-      const rzp1 = new window.Razorpay(options);
-      rzp1.on('payment.failed', function (response) {
-        alert(response.error.description);
-      });
-      rzp1.open();
+      clearLocal();
+      navigate(`/orders/confirmation?id=${res.data._id}`, { replace: true });
     } catch (err) {
       console.error(err);
-      const msg = err.response?.data?.msg || err.message || 'Failed to initiate payment.';
-      alert(`Payment Error: ${msg}`);
+      const msg = err.response?.data?.msg || err.message || 'Failed to place order.';
+      alert(`Order Error: ${msg}`);
     } finally {
       setLoading(false);
     }
@@ -164,8 +115,8 @@ const CheckoutPage = () => {
                   <label
                     key={a._id}
                     className={`flex gap-3 items-start border rounded-xl p-4 cursor-pointer transition-all ${selectedId === a._id
-                        ? 'border-primary bg-purple-50 ring-1 ring-primary'
-                        : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-primary bg-purple-50 ring-1 ring-primary'
+                      : 'border-gray-200 hover:border-gray-300'
                       }`}
                   >
                     <input
@@ -340,23 +291,30 @@ const CheckoutPage = () => {
             </div>
 
             <div className="mt-8 space-y-4">
-              <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <div className="flex items-center gap-3 mb-2">
+              <div className="bg-white p-4 rounded-xl border border-gray-200">
+                <div className="flex items-center gap-3 mb-4">
                   <input type="radio" checked readOnly className="text-primary focus:ring-primary" />
-                  <span className="font-semibold text-gray-800">Razorpay Secure</span>
+                  <span className="font-semibold text-gray-800">Scan & Pay (GPay/UPI)</span>
                 </div>
-                <p className="text-xs text-gray-500 ml-7">
-                  Pay securely with Credit/Debit Card, NetBanking, UPI, or Wallets.
-                </p>
-                <div className="flex gap-2 ml-7 mt-2 opacity-60">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-3" />
-                </div>
-              </div>
 
-              <p className="text-xs text-gray-500">
-                Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our <span className="text-primary cursor-pointer hover:underline">privacy policy</span>.
-              </p>
+                <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg mb-4">
+                  <p className="text-sm font-bold text-gray-700 mb-2">Scan QR Code to Pay</p>
+                  <div className="bg-white p-4 rounded shadow-sm border border-gray-200">
+                    <QRCodeCanvas
+                      value={`upi://pay?pa=matheshwaranmathesh432@oksbi&pn=MatheshWaran%20A.S.&am=${total.toFixed(2)}&cu=INR`}
+                      size={180}
+                      level={"H"}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    Use any UPI app (GPay, PhonePe, Paytm) to scan and pay <span className="font-bold text-gray-800">₹{total.toFixed(2)}</span>
+                  </p>
+                </div>
+
+                <p className="text-xs text-gray-500">
+                  By placing the order, you confirm that you have completed the payment transaction.
+                </p>
+              </div>
 
               <button
                 onClick={handlePayment}
@@ -369,7 +327,7 @@ const CheckoutPage = () => {
                     Processing...
                   </>
                 ) : (
-                  'Place Order'
+                  'I Have Paid - Place Order'
                 )}
               </button>
             </div>
