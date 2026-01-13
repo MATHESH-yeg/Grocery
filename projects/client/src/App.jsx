@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import CategoryPage from './pages/CategoryPage';
+import ProductsPage from './pages/ProductsPage';
 import ProductDetails from './pages/ProductDetails';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -24,10 +24,11 @@ import AdminLayout from './components/AdminLayout';
 import Footer from './components/Footer';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import OtpPage from './pages/OtpPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 const App = () => {
   const location = useLocation();
-  const hideFooterRoutes = ['/login', '/register', '/forgot-password', '/otp'];
+  const hideFooterRoutes = ['/login', '/register', '/forgot-password', '/otp', '/reset-password'];
   const shouldShowFooter = !hideFooterRoutes.includes(location.pathname);
 
   return (
@@ -37,7 +38,8 @@ const App = () => {
         <main className="flex-1 py-6">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/category/:category" element={<CategoryPage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/category/:category" element={<ProductsPage />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<CartPage />} />
             <Route
@@ -69,6 +71,7 @@ const App = () => {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/otp" element={<OtpPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             {/* Admin Routes with Sidebar Layout */}
             <Route

@@ -22,14 +22,11 @@ const Home = () => {
   }, []);
 
   const categories = [
-    { name: 'Fruits & Vegetables', icon: '🍎', path: '/category/fruits' },
-    { name: 'Meats & Seafood', icon: '🥩', path: '/category/meats' },
-    { name: 'Breakfast & Dairy', icon: '🍳', path: '/category/breakfast' },
-    { name: 'Breads & Bakery', icon: '🍞', path: '/category/bakery' },
-    { name: 'Beverages', icon: '🥤', path: '/category/beverages' },
-    { name: 'Frozen Foods', icon: '❄️', path: '/category/frozen' },
-    { name: 'Biscuits & Snacks', icon: '🍪', path: '/category/snacks' },
-    { name: 'Grocery & Staples', icon: '🌾', path: '/category/grocery' },
+    { name: 'Vegetables', icon: '🥦', path: '/category/Vegetables' },
+    { name: 'Fruits', icon: '🍎', path: '/category/Fruits' },
+    { name: 'Beverages', icon: '🥤', path: '/category/Beverages' },
+    { name: 'Snacks', icon: '🍪', path: '/category/Snacks' },
+    { name: 'Dairy', icon: '🥛', path: '/category/Dairy' },
   ];
 
   return (
@@ -49,19 +46,16 @@ const Home = () => {
             </p>
 
             <div className="flex items-center gap-6 pt-4">
-              <button className="bg-[#10b981] text-white px-8 py-3.5 rounded-lg font-bold hover:bg-[#059669] transition-colors shadow-lg shadow-green-200 flex items-center gap-2">
+              <Link to="/products" className="bg-[#10b981] text-white px-8 py-3.5 rounded-lg font-bold hover:bg-[#059669] transition-colors shadow-lg shadow-green-200 flex items-center gap-2">
                 Shop Now
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
-              </button>
+              </Link>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-[#ef4444]">$21.67</span>
-                <span className="text-lg text-gray-400 line-through decoration-2">$59.99</span>
+
               </div>
-              <p className="text-xs text-gray-400 max-w-[100px] leading-tight">
-                Don't miss this limited time offer.
-              </p>
+
             </div>
           </div>
 
@@ -87,7 +81,7 @@ const Home = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {categories.map((cat, idx) => (
             <Link
               key={idx}

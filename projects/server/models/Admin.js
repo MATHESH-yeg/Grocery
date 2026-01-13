@@ -27,6 +27,8 @@ const adminSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  resetPasswordOTP: String,
+  resetPasswordExpires: Date,
 });
 
 module.exports = mongoose.model('Admin', adminSchema);

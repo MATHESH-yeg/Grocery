@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const OtpPage = () => {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -52,19 +53,30 @@ const OtpPage = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const otpValue = otp.join('');
         if (otpValue.length !== 6) return;
 
         setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            await axios.post('/api/auth/verify-otp', { email, otp: otpValue });
             setLoading(false);
-            alert(`OTP ${otpValue} verified! (Simulation)`);
-            // Navigate to reset password or login
-            navigate('/login');
-        }, 1500);
+            // Navigate to reset password page
+            navigate('/reset-password', { state: { email, otp: otpValue } });
+        } catch (err) {
+            setLoading(false);
+            alert(err.response?.data?.msg || 'Invalid or expired OTP');
+        }
+    };
+
+    const handleResend = async () => {
+        try {
+            await axios.post('/api/auth/forgot-password', { email });
+            alert('OTP resent successfully!');
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error resending OTP');
+        }
     };
 
     return (
@@ -112,7 +124,11 @@ const OtpPage = () => {
                     <div className="text-center text-sm">
                         <p className="text-gray-600">
                             Didn't receive the code?{' '}
-                            <button type="button" className="font-medium text-primary hover:text-primaryDark transition-colors">
+                            <button
+                                type="button"
+                                onClick={handleResend}
+                                className="font-medium text-primary hover:text-primaryDark transition-colors"
+                            >
                                 Resend
                             </button>
                         </p>

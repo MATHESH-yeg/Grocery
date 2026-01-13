@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            const res = await axios.post('/api/auth/forgot-password', { email });
             setLoading(false);
             // Navigate to OTP page with email state
             navigate('/otp', { state: { email } });
-        }, 1500);
+        } catch (err) {
+            setLoading(false);
+            alert(err.response?.data?.msg || 'Error sending OTP');
+        }
     };
 
     return (

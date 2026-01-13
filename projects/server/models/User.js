@@ -46,6 +46,8 @@ const userSchema = new mongoose.Schema({
       ref: 'Product',
     },
   ],
+  resetPasswordOTP: String,
+  resetPasswordExpires: Date,
 });
 
 module.exports = mongoose.model('User', userSchema);
