@@ -35,4 +35,12 @@ app.get("/", (req, res) => {
 });
 
 // ✅ EXPORT app
+// Define PORT inside the file if not already defined (it was missing in previous view)
+const PORT = process.env.PORT || 5000;
+
+// ✅ EXPORT app
 module.exports = app;
+
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}

@@ -1,4 +1,6 @@
 const Product = require('../models/Product');
+const fs = require('fs');
+const path = require('path');
 
 // @route    GET api/products
 // @desc     Get all products with optional filter, search, and sort
@@ -32,6 +34,9 @@ exports.getProducts = async (req, res) => {
     res.json(allProducts);
   } catch (err) {
     console.error(err.message);
+    const logPath = path.join(__dirname, '../error.log');
+    const logMessage = `${new Date().toISOString()} - Error in getProducts: ${err.stack}\n`;
+    fs.appendFileSync(logPath, logMessage);
     res.status(500).send('Server Error');
   }
 };
